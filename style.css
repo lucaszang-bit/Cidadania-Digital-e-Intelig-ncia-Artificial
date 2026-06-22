@@ -1,0 +1,102 @@
+/* Configurações Gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: center;
+}
+
+header, footer {
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+}
+
+header h1 {
+    color: #38bdf8;
+    margin-bottom: 5px;
+}
+
+.instructions {
+    text-align: center;
+    max-width: 600px;
+    margin: 10px auto 25px auto;
+    padding: 0 15px;
+}
+
+.instructions h2 {
+    color: #fbbf24;
+    margin-bottom: 10px;
+}
+
+/* Tabuleiro com Flexbox */
+.game-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+}
+
+.game-board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    max-width: 800px;
+    justify-content: center;
+}
+
+/* Estilização das Cartas */
+.card {
+    width: 160px;
+    height: 160px;
+    background-color: #1e293b;
+    border: 3px solid #38bdf8;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    user-select: none;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Estado da carta virada para cima */
+.card.flipped {
+    background-color: #334155;
+    color: #fbbf24;
+    transform: scale(1.03);
+}
+
+/* Estado quando forma par correto */
+.card.matched {
+    background-color: #065f46;
+    border-color: #34d399;
+    color: #a7f3d0;
+    cursor: default;
+}
+
+/* Responsividade (Celulares) */
+@media (max-width: 600px) {
+    .card {
+        width: 110px;
+        height: 110px;
+        font-size: 11px;
+        padding: 5px;
+    }
+    .game-board {
+        gap: 8px;
+    }
+}
