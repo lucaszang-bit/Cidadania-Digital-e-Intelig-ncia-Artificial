@@ -1,102 +1,99 @@
-// Definição das cartas: cada par possui o mesmo 'id'
-const cardsData = [
-    { id: 1, text: "Deepfake", type: "termo" },
-    { id: 1, text: "Vídeo ou áudio manipulado por IA realista.", type: "def" },
+// Dados das cartas (Termos e as Soluções de Segurança correspondentes)
+const gameItems = [
+    { id: 1, text: "Robôs de Fake News", role: "perigo" },
+    { id: 1, text: "Contas automatizadas que espalham boatos.", role: "solucao" },
     
-    { id: 2, text: "Fake News", type: "termo" },
-    { id: 2, text: "Notícias falsas geradas em massa para enganar.", type: "def" },
+    { id: 2, text: "Deepfake de Áudio", role: "perigo" },
+    { id: 2, text: "Voz clonada por IA para aplicar golpes por telefone.", role: "solucao" },
     
-    { id: 3, text: "Checagem de Fatos", type: "termo" },
-    { id: 3, text: "Verificar fontes em sites especializados antes de compartilhar.", type: "def" },
+    { id: 3, text: "Falta de Fontes", role: "perigo" },
+    { id: 3, text: "Sinal clássico de que a notícia pode ser falsa.", role: "solucao" },
     
-    { id: 4, text: "Cidadania Digital", type: "termo" },
-    { id: 4, text: "Uso consciente, ético e seguro da tecnologia.", type: "def" }
+    { id: 4, text: "Canais Oficiais", role: "perigo" },
+    { id: 4, text: "Locais seguros para confirmar se a mídia é real.", role: "solucao" }
 ];
 
-let firstCard = null;
-let secondCard = null;
-let lockBoard = false;
+let cardA = null;
+let cardB = null;
+let preventClick = false;
 
-const gameBoard = document.getElementById('gameBoard');
+const board = document.getElementById('gameBoard');
 
-// 1. Função para embaralhar as cartas
-function shuffle(array) {
+// Embaralhar elementos
+function mixCards(array) {
     return array.sort(() => Math.random() - 0.5);
 }
 
-// 2. Inicializar o tabuleiro
-function createBoard() {
-    const shuffledCards = shuffle([...cardsData]);
+// Renderizar o tabuleiro na tela
+function initGame() {
+    const mixed = mixCards([...gameItems]);
     
-    shuffledCards.forEach(data => {
-        const cardElement = document.createElement('div');
-        cardElement.classList.add('card');
-        cardElement.dataset.id = data.id;
-        // Inicialmente mostra um ponto de interrogação
-        cardElement.textContent = "🔍"; 
-        cardElement.dataset.textContent = data.text; // Guarda o texto real escondido
+    mixed.forEach(item => {
+        const cardNode = document.createElement('div');
+        cardNode.classList.add('card');
+        cardNode.dataset.id = item.id;
+        cardNode.textContent = "🔒"; // Ícone padrão de fechado
+        cardNode.dataset.info = item.text; // Guarda o texto secreto
         
-        cardElement.addEventListener('click', flipCard);
-        gameBoard.appendChild(cardElement);
+        cardNode.addEventListener('click', handleCardClick);
+        board.appendChild(cardNode);
     });
 }
 
-// 3. Lógica de virar a carta
-function flipCard() {
-    if (lockBoard) return;
-    if (this === firstCard) return;
+// Ação do clique
+function handleCardClick() {
+    if (preventClick) return;
+    if (this === cardA) return;
     if (this.classList.contains('matched')) return;
 
     this.classList.add('flipped');
-    this.textContent = this.dataset.textContent; // Mostra o texto informativo
+    this.textContent = this.dataset.info;
 
-    if (!firstCard) {
-        firstCard = this;
+    if (!cardA) {
+        cardA = this;
         return;
     }
 
-    secondCard = this;
-    checkMatch();
+    cardB = this;
+    evaluateMatch();
 }
 
-// 4. Verificação de Pares
-function checkMatch() {
-    const isMatch = firstCard.dataset.id === secondCard.dataset.id;
+// Verifica se os IDs são iguais
+function evaluateMatch() {
+    const success = cardA.dataset.id === cardB.dataset.id;
 
-    if (isMatch) {
-        disableCards();
+    if (success) {
+        lockMatched();
     } else {
-        unflipCards();
+        turnBack();
     }
 }
 
-// Se acertou
-function disableCards() {
-    firstCard.classList.add('matched');
-    secondCard.classList.add('matched');
-    
-    resetTurn();
+// Se acertou o par
+function lockMatched() {
+    cardA.classList.add('matched');
+    cardB.classList.add('matched');
+    clearSelection();
 }
 
-// Se errou (as cartas viram de volta após 1.5 segundos)
-function unflipCards() {
-    lockBoard = true;
+// Se errou o par
+function turnBack() {
+    preventClick = true;
     
     setTimeout(() => {
-        firstCard.classList.remove('flipped');
-        secondCard.classList.remove('flipped');
-        firstCard.textContent = "🔍";
-        secondCard.textContent = "🔍";
-        
-        resetTurn();
-    }, 1500);
+        cardA.classList.remove('flipped');
+        cardB.classList.remove('flipped');
+        cardA.textContent = "🔒";
+        cardB.textContent = "🔒";
+        clearSelection();
+    }, 1200); // 1.2 segundos para memorizar
 }
 
-// Reseta as variáveis do turno atual
-function resetTurn() {
-    [firstCard, secondCard] = [null, null];
-    lockBoard = false;
+// Limpa a seleção do turno
+function clearSelection() {
+    [cardA, cardB] = [null, null];
+    preventClick = false;
 }
 
-// Inicia o jogo ao carregar a página
-createBoard();
+// Executa a inicialização
+initGame();
